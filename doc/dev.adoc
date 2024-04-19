@@ -1,15 +1,41 @@
 == Developer's Guide
 
-As noted in the first bullet point of Appendix A, I intend to add developer documentation reflecting my learning as I read the code and consult Nassib. The following skeleton is work in progress, and will be of no use to anyone but me, for now at least.
+I intend to add developer documentation reflecting my learning as I read the code and consult Nassib. The following skeleton is work in progress, and will be of no use to anyone but me, for now at least.
 
 
 === Directory structure
 
+The Metadb source code is found at https://github.com/metadb-project/metadb
+
+The top level directory contains the following files and directories:
+
+* `LICENSE` -- Apache license v2.0
+* `README.md` -- Brief highest-level documentation
+* `go.mod` -- The standard https://go.dev/doc/modules/gomod-ref[Go module declaration]
+* `go.sum` -- Checksum file for dependencies referenced in `go.mod`
+* `cmd` -- _All_ source code, for commands and underlying functionality
+* `.errcheck` -- Configuration file for Go linting program `errcheck`
+* `build.sh` -- Shell-script to build Metadb
+* `tools.go` -- Register of https://go.dev/wiki/Modules#how-can-i-track-tool-dependencies-for-a-module[Go-based tools] used in build.
+* `doc` -- Documentation in https://asciidoc.org/[AsciiDoc] format
+
+==== Within the `doc` directory
+
+`metadb.adoc` is the top-level documentation file, which includes the other AsciiDoc files. These files can be viewed locally in a browser with the https://addons.mozilla.org/en-GB/firefox/addon/asciidoctorjs-live-preview/[Asciidoctor.js Live Preview] extension.
+
+The AsciiDoc files can be compiled to HTML using `asciidoctor -a docinfo=shared *.adoc`, and the Metadb documentation website[https://metadb.dev/doc/] is generated in this way. The only other file in the `doc` directory is `docinfo.html`, which provides CSS styling for the generated HTML.
+
+==== Within the `cmd` directory
+
 * `mdb` is an old client for the `metadb` server.  It probably is legacy code and probably should be removed.
+
+
+=== Features
 
 * The list of top-level features mentioned at the start of https://metadb.dev/doc/[the user documentation] is probably worth using as a high-level overview of the code:
   ** streaming data sources
     *** In principle, multiple kinds of source: so far, only kafka
   ** data model transforms
   ** historical data
+
 
