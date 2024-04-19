@@ -1,6 +1,6 @@
 == Developer's Guide
 
-As noted in the first bullet point of Appendix A, I intend to add developer documentation reflecting my learning as I read the code and consult Nassib. The following skeleton is work in progress, of will be of no use to anyone but me.
+As noted in the first bullet point of Appendix A, I intend to add developer documentation reflecting my learning as I read the code and consult Nassib. The following skeleton is work in progress, and will be of no use to anyone but me.
 
 
 === Directory structure
