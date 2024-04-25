@@ -69,7 +69,7 @@ There are a lot of moving parts involved in getting FOLIO data into Metadb: Post
     *** Zookeeper is used by Kafka to co-ordinate the cluster, but is not _directly_ involved in handling change events.
 * Metadb reads the change events from Kafka and plays them into its own instance of Postgres.
 
-In the diagram below, user-interface components are shown in red, underlying software in blue, and data-stores in green. The grey box in the middle represents the Debezium agregate: Debezium itself and the components that it manages. We don’t have to think much about Kafka Connect, Kafka or Zookeeper, because they are all part of the Debezium “black box”.
+In the diagram below, user-interface components are shown in red, underlying software in blue, and data-stores in green. The grey box in the middle represents the Debezium agregate: Debezium itself and the components that it manages. We don’t have to think much about Kafka Connect, Kafka or Zookeeper, because they are all part of the Debezium “black box”. (Operationally Kafka tends to be run as a separate utility: for example, AWS's managed service might be used for it.)
 
 // Exported as PNG from https://docs.google.com/presentation/d/1405stn-Vtjw2RA3nYQ9C8bEFytmv6Le6gRhTNFwEBI4/edit#slide=id.p
 image::software-and-data.png[Diagram: Software and Data in Metadb]
@@ -84,13 +84,9 @@ We will now consider these components individually.
 https://folio.org/[The FOLIO library services platform] stores its data in a https://www.postgresql.org/[PostgreSQL] database. Most of the database's configuration is established as part of setting up FOLIO. One further step is necessary if the database it to be analyzed by Metadb. To allow capturing data changes in the source PostgreSQL database, logical decoding has to be enabled by setting `wal_level = logical` in `postgresql.conf`.
 
 
-==== Kafka
+==== Debezium
 
-Kafka servers are known as "brokers". Several brokers may make up a Kafka cluster.
-
-XXX Does a consumer connect to a cluster, or to a specific broker?
-
-XXX
+Debezium is a high-level harvesting engine, built on top of Apache Kafka and using connectors from Kafka Connect.
 
 
 ==== Kafka Connect
@@ -98,10 +94,13 @@ XXX
 XXX
 
 
-==== Debezium
+==== Kafka
 
-"Debezium is built on top of Apache Kafka and provides a set of Kafka Connect compatible connectors."
--- from https://debezium.io/documentation/reference/2.6/tutorial.html[the Debezium tutorial]
+Kafka servers are known as "brokers". Several brokers may make up a Kafka cluster.
+
+XXX Does a consumer connect to a cluster, or to a specific broker?
+
+XXX
 
 
 ==== Metadb Postgres database
