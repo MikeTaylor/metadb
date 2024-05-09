@@ -62,7 +62,7 @@ XXX
 
 There are a lot of moving parts involved in getting FOLIO data into Metadb: Postgres, Kafka Connect, Debezium, Kafka, Zookeeper, and a second instance of Postgres, as well as Metadb itself. It can be difficult to keep straight how they all fit together.
 
-* Postgres holds the data of the running FOLIO system. It can be configured (see below) to log its change events to a _replication slot_, which is internal to the database. In principle, Metadb could read these change events directly from the replication slot, but there are lots of reasons why this would not be the best approach. Instead:
+* Postgres holds the data of the running FOLIO system. It can be configured (see below) to log its change events to a _replication slot_, which is internal to the database. In principle, Metadb could read these change events directly from the replication slot using Postgres's own publish/subscribe mechanisms, but there are lots of reasons why this would not be the best approach. Instead:
 * Debezium reads change events and makes them available for Metadb:
   ** A Postgres connector from Kafka Connect is controlled by Debezium to read the change events from the replication log.
   ** Kafka accepts the events fed to it by Debezium (the producer), and buffers them for reading by Metadb (the consumer).
@@ -81,12 +81,18 @@ We will now consider these components individually.
 
 ==== FOLIO Postgres database
 
-https://folio.org/[The FOLIO library services platform] stores its data in a https://www.postgresql.org/[PostgreSQL] database. Most of the database's configuration is established as part of setting up FOLIO. One further step is necessary if the database it to be analyzed by Metadb. To allow capturing data changes in the source PostgreSQL database, logical decoding has to be enabled by setting `wal_level = logical` in `postgresql.conf`.
+https://folio.org/[The FOLIO library services platform] stores its data in a https://www.postgresql.org/[PostgreSQL] database. Most of the database's configuration is established as part of setting up FOLIO. One further step is necessary if the database it to be analyzed by Metadb.
+
+To allow capturing data changes in the source PostgreSQL database, multiple steps are necessary:
+
+* Logical decoding has to be enabled by setting `wal_level = logical` in `postgresql.conf`.
+* A publication must be created with `CREATE PUBLICATION` XXX much more to say.
+* Replica identities must be created for all replicated tables with `ALTER TABLE REPLICA IDENTITY` XXX much more to say.
 
 
 ==== Debezium
 
-Debezium is a high-level harvesting engine, built on top of Apache Kafka and using connectors from Kafka Connect.
+Debezium is a high-level event harvesting engine, built on top of Apache Kafka and using connectors from Kafka Connect. It is configured by a WSAPI which can be used to point it at a source database to harvest from -- in this case, the FOLIO Postgres database.
 
 
 ==== Kafka Connect
