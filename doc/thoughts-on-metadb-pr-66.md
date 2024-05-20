@@ -26,6 +26,9 @@ My thoughts on the individual proposed changes follow.
 
 ## Minor changes in various files
 
+**NOTE.**
+I have [left these comments already](https://github.com/metadb-project/metadb/pull/66#issuecomment-2114948088).
+
 * **cmd/metadb/dbx/dbx.go line 167**.
 It's probably a mistake that the `NewPool` function sets a hardwired `MaxConns` value of 20, and that mistake is not really addressed by changing the hardwired value to 40. This should be configurable. However, this doesn't seem like a radical change that could break anything.
   * Learning point: how is configuration done? I see from other code that there is a configuration file, but I don't know if there is also a set of environment variables, or a known location for configuration information within the database.
@@ -69,7 +72,7 @@ Again, these observations arise from my reading of the user documentation, comin
 
 * The "Main tables", "Current tables" and "Transformed tables" sections should be subsections of a higher-level section that describes the concepts in a high-level way and outlines the naming conventions (including transformed main tables such as `patrongroup__t__`).
 
-* The example in section 1.3 shows that the `__id`, `__start` and `__origin` columns exist in current tables (as in main tables). But what about `__end` and `__current`?
+* The example in section 1.3 shows that the `__id`, `__start` and `__origin` columns exist in current tables (as in main tables). But what about `__end` and `__current`? Yes, these also exist.
 
 * In section 1.4, "In the current version of Metadb, only top-level, scalar JSON fields are extracted into transformed tables." We need to explain what non-top-level and non-scalar fields are. Section 4.1.4.4 implicitly explains this when it discusses extracting array values from JSONB fields.
 
@@ -136,6 +139,8 @@ Again, these observations arise from my reading of the user documentation, comin
 
 * In section 3.8.2 (Creating a connector), "... by setting `wal_level = logical` in `postgresql.conf`." This is in the source (FOLIO) Postgres database, not Metadb's database.
 
+* Section 4 should start with an introduction based on "More detail on how multiple ReShare tenants are handled" above.
+
 * Sections 3.8.3 (Monitoring replication) and 3.8.6 (Deleting a connection) are completely opaque to me. When I understand them, I will expand them.
 
 * In section 4.1.1, "Metadb transforms MARC records from the tables `marc_records_lb` and `records_lb` in schema `folio_source_record` to a tabular form which is stored in a new table, `folio_source_record.marc__t`." This set of schema and table names is hardwired and generally tailored for FOLIO and its reporting community. They share queries and wouldn't want variance in the table names.
@@ -157,13 +162,13 @@ Again, these observations arise from my reading of the user documentation, comin
   * "Set `trimschemaprefix` to remove the tenant from schema names": We do this because when we're interested in multiple FOLIO tenants, each tenant's data goes into an entirely separate MetaDB database.
   * "Set [...] `addschemaprefix` to add a `folio_` prefix to the schema names." This is done because we generally want the option of using MetaDB for _all_ a library's data analysis needs, not justthose related to FOLIO. For example, you might also make a data-source for (say) VuFind’s Solr database, and use it to maintain tables with names like `vufind_inventory.items` and `vufind_requests.requests`.
   * There is nothing in the `CREATE DATA SOURCE` statement to indicate what tenant's data we want. That information has to be included in the configuration of the nominated Kafka topic.
-  * XXX "In the Debezium PostgreSQL connector configuration, the following exclusions are suggested [list]". Various tables are excluded for different reasons. Most of them are omitted just because they are not of interest (e.g. pubsub state) but data from some modules, e.g. `mod_login`, is omitted for security reasons. It is up to individual libraries to tailor this exclusion list to their requirements.
+  * "In the Debezium PostgreSQL connector configuration, the following exclusions are suggested [list]". Various tables are excluded for different reasons. Most of them are omitted just because they are not of interest (e.g. pubsub state) but data from some modules, e.g. `mod_login`, is omitted for security reasons. It is up to individual libraries to tailor this exclusion list to their requirements.
 
 * In section 4.2.2 (Configuring Metadb for ReShare), "Before defining a ReShare data source, create a data origin for each consortial tenant". This means each tenant _in_ a consortium, not a tenant _that represents_ a consortium?
 
 * We do not use `trimschemaprefix` when ingesting from ReShare, because the `reshare` module uses the tentant names in the prefixes to choose between the configured data origins.
 
-* At the end of section 4.2.2, some backquote slippage results in a hunk of text being in code font.
+* At the end of section 4.2.2, some backquote slippage results in a hunk of text being in code font. XXX This seems to be a translator error: my in-browser preview shows it correctly.
 
 * Section 4.3 (MARC transform for LDP) makes it clear that MARC transformation
 for LDP Classic is done by an external program, `marct` (formerly known as `ldpmarc`). For MetaDB, though, the MARC transformation is integrated.
